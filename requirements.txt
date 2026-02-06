@@ -1,0 +1,12 @@
+PyQt5
+jupyter
+lightgbm
+matplotlib
+numpy
+pandas
+scikit-learn
+seaborn
+torch
+tqdm
+transformers
+xgboost

@@ -1,0 +1,83 @@
+name: Run All
+
+# Thanks to [https://github.com/JHUISI/charm/blob/dev/.github/workflows/ci.yml](https://github.com/JHUISI/charm/blob/dev/.github/workflows/ci.yml). 
+
+on:
+  workflow_dispatch:
+    inputs:
+      pythonVersion:
+        description: 'Python version'
+        required: true
+        default: '3.x'
+        type: choice
+        options:
+          - '3.x'
+          - '3.9'
+          - '3.10'
+          - '3.11'
+          - '3.12'
+          - '3.13'
+          - '3.14'
+  push:
+    branches:
+      - main
+
+jobs:
+  runAll:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Determine the Python version
+      id: pythonVersion
+      run: |
+        cd "${{ github.workspace }}"
+        if [[ "workflow_dispatch" == "${{ github.event_name }}" ]];
+        then
+          echo "pythonVersion=${{ github.event.inputs.pythonVersion }}" >> ${GITHUB_OUTPUT}
+        else
+          echo "pythonVersion=3.x" >> ${GITHUB_OUTPUT}
+        fi
+    
+    - name: Set up Python ${{ steps.pythonVersion.outputs.pythonVersion }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ steps.pythonVersion.outputs.pythonVersion }}
+    
+    - name: Install necessary Python libraries
+      run: |
+        cd "${{ github.workspace }}"
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+    
+    - name: Run Python scripts
+      run: |
+        cd "${{ github.workspace }}"
+        echo "The current working directory is \"$(pwd)\". "
+        python -W ignore train.py
+        python test.py
+        python notebook-1-0.py
+        python notebookad-2-0.py
+    
+    - name: Upload results
+      uses: actions/upload-artifact@v4
+      with:
+        name: results.zip
+        path: ${{ github.workspace }}/results/
+        if-no-files-found: error
+    
+    - name: Upload alzdModel.pth
+      uses: actions/upload-artifact@v4
+      with:
+        name: alzdModel.pth
+        path: ${{ github.workspace }}/alzdModel.pth
+        if-no-files-found: error
+    
+    - name: Upload complete_alzheimer_system.pth
+      uses: actions/upload-artifact@v4
+      with:
+        name: complete_alzheimer_system.pth
+        path: ${{ github.workspace }}/complete_alzheimer_system.pth
+        if-no-files-found: error

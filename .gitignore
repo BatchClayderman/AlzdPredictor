@@ -1,0 +1,7 @@
+*.ipynb
+.ipynb_checkpoints*
+.ipynb_checkpoints/
+alzdPredictor.pth
+complete_alzheimer_system.pth
+results
+results*
