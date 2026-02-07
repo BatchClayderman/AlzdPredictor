@@ -653,7 +653,7 @@ def cross_validate_model(model_creator, texts, audios, labels, tokenizer,
             )
         elif model_name.startswith('audio'):
             optimizer = optim.Adam(model.parameters(), lr=5e-4, weight_decay=1e-5)
-            scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=3, factor=0.5, verbose=True)
+            scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=3, factor=0.5)
         else:  # 多模态模型
             optimizer = optim.AdamW(model.parameters(), lr=5e-5, eps=1e-8, weight_decay=0.01)
             total_steps = len(train_loader) * num_epochs
